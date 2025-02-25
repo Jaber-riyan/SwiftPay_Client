@@ -9,7 +9,7 @@ const Footer = () => {
             {/* Logo & Title */}
             <div className='text-center pb-5 border-b border-t pt-5 border-gray-700'>
                 <h2 className='text-4xl font-bold text-white tracking-widest uppercase bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent'>
-                    Taskify
+                    SwiftPay
                 </h2>
             </div>
 
@@ -60,7 +60,7 @@ const Footer = () => {
             {/* Copyright Section */}
             <div className="border-t border-gray-700 pt-4 text-center">
                 <p className="text-sm text-gray-500">
-                    © {new Date().getFullYear()} Taskify. All rights reserved.
+                    © {new Date().getFullYear()} SwiftPay. All rights reserved.
                 </p>
             </div>
         </footer>

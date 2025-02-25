@@ -10,11 +10,12 @@ import { useForm } from 'react-hook-form';
 import useAuth from '../../../Hooks/UseAuth/UseAuth';
 import SocialLogin from '../../../Components/SocialLogin/SocialLogin';
 import UseAxiosNormal from '../../../Hooks/UseAxiosSecureAndNormal/UseAxiosNormal';
+import { v4 as uuidv4 } from "uuid";
 
 
 
 const Login = () => {
-    const { handleLogin, user, googleRegister, setLoading } = useAuth();
+    const { handleLogin, user, googleRegister, setLoading, setUser } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const captchaRef = useRef(null);
@@ -52,54 +53,79 @@ const Login = () => {
         }
     }
 
-    const handleSubmitLogin = (data) => {
+    const getDeviceId = () => {
+        let deviceId = localStorage.getItem('deviceId'); // Check if a device ID exists
+        if (!deviceId) {
+            deviceId = uuidv4(); // Generate a new one if not found
+            localStorage.setItem('deviceId', deviceId); // Store it in localStorage
+        }
+        return deviceId;
+    };
+
+    const handleSubmitLogin = async (data) => {
         const email = data?.['email'];
-        const password = data?.['password'];
+        const pin = data?.['pin'];
+        const deviceId = getDeviceId()
 
-        if (password.length < 6) {
-            toast.error("Password Should Be 6 Character.");
-            return;
-        }
-        if (!/[A-Z]/.test(password)) {
-            toast.error("Password Must have an Uppercase Letter");
-            return;
-        }
-        if (!/[a-z]/.test(password)) {
-            toast.error("Password Must have an Lowercase Letter");
+        if (pin.length !== 6) {
+            toast.error("PIN Should Be 6 Character.");
             return;
         }
 
-        handleLogin(email, password)
-            .then(async (res) => {
-                // console.log(location);
-                const user = res.user;
-                const userInfo = {
-                    name: user?.displayName,
-                    email,
-                    lastLoginTime: user.metadata.lastSignInTime,
+        console.table({ email, pin, deviceId });
+
+        const userInfo = {
+            email, pin, deviceId
+        }
+        const { data: userInsertInfo } = await axiosInstanceNormal.post('/login-user', userInfo);
+        console.log(userInsertInfo);
+        if (!userInsertInfo.status) {
+            Swal.fire({
+                title: "You are already logged in on another device Do you want to Logout from all devices?",
+                showDenyButton: true,
+                confirmButtonText: "Yes",
+                denyButtonText: `No`
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const { data } = await axiosInstanceNormal.get(`/logout-all-devices/${email}`)
+                    if (data.status) {
+                        toast.success(data.message);
+                    }
                 }
-                const { data } = await axiosInstanceNormal.post('/users', userInfo);
-                // console.log(data);
-                if (data.data.insertedId || data.status === false) {
+            });
+        }
+        else {
+            handleLogin(email, pin)
+                .then(async (res) => {
+                    // console.log(location);
+                    const user = res.user;
+                    const userInfo = {
+                        name: user?.displayName,
+                        email,
+                        lastLoginTime: user.metadata.lastSignInTime,
+                    }
+                    const { data } = await axiosInstanceNormal.post('/users', userInfo);
                     // console.log(data);
-                    Swal.fire({
-                        title: 'Successfully Login!',
-                        icon: 'success'
-                    })
-                    navigate(location?.state || '/');
-                }
-            })
-            .catch(error => {
-                const errorCode = error.code.split("auth/")[1];
-                const formattedError = errorCode
-                    ?.split("-")
-                    ?.map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                    ?.join(" ");
-                toast.error(formattedError);
-                setLoading(false)
-                navigate('/login');
-            })
-        // e.target.reset();
+                    if (data.data.insertedId || data.status === false) {
+                        // console.log(data);
+                        Swal.fire({
+                            title: 'Successfully Login!',
+                            icon: 'success'
+                        })
+                        navigate(location?.state || '/');
+                    }
+                })
+                .catch(error => {
+                    const errorCode = error.code.split("auth/")[1];
+                    const formattedError = errorCode
+                        ?.split("-")
+                        ?.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        ?.join(" ");
+                    toast.error(formattedError);
+                    setLoading(false)
+                    navigate('/login');
+                })
+        }
 
     }
 
@@ -154,40 +180,36 @@ const Login = () => {
                     <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-[#000]" htmlFor="email">
-                                Email address
+                                Email
                             </label>
-                            <div className="flex items-center mt-1">
-                                <FiMail className="w-5 h-5 text-black" />
+                            <div className="">
                                 <input
                                     type="email"
-                                    ref={emailRef}
                                     id="email"
                                     name='email'
                                     {...register("email", { required: true })}
-                                    placeholder="Enter your email address"
-                                    className="w-full px-4 py-2 ml-2 border rounded-lg outline-none bg-[#ffffffce] focus:border-gray-400"
+                                    placeholder="Enter your email"
+                                    className="w-full px-4 py-2 border rounded-lg outline-none bg-[#ffffffce] focus:border-gray-400"
                                 />
                             </div>
                             {errors.email && <span className="text-red-500">This field is required</span>}
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-[#000]" htmlFor="password">
-                                Password
+                            <label className="block text-sm font-medium text-[#000]" htmlFor="pin">
+                                Pin (must 6 digit)
                             </label>
-                            <div className="flex items-center mt-1">
-                                <FiLock className="w-5 h-5 text-black" />
+                            <div>
                                 <input
                                     type="password"
-                                    id="password"
-                                    ref={passwordRef}
-                                    name='password'
-                                    {...register("password", { required: true })}
-                                    placeholder="Enter your password"
-                                    className="w-full px-4 py-2 ml-2 border rounded-lg outline-none bg-[#ffffffce] focus:border-gray-400"
+                                    id="pin"
+                                    name='pin'
+                                    {...register("pin", { required: true })}
+                                    placeholder="Enter your 6 digit PIN"
+                                    className="w-full px-4 py-2 border rounded-lg outline-none bg-[#ffffffce] focus:border-gray-400"
                                 />
                             </div>
-                            {errors.password && <span className="text-red-500">This field is required</span>}
+                            {errors.pin && <span className="text-red-500">This field is required</span>}
                         </div>
                         <div>
                             <label className="flex items-center gap-2 font-medium text-[#000] mb-2" htmlFor="captcha">
@@ -216,12 +238,12 @@ const Login = () => {
                     </p>
 
 
-                    <button disabled={!captchaMatch} className={`w-full py-2 mt-4 rounded-md  text-white ${!captchaMatch ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#D1A054B3] hover:bg-[#d19f54f8]'}`}>
-                        Login
-                    </button>
-                    {/* <button className={`w-full py-2 mt-4 rounded-md  text-white bg-[#D1A054B3] hover:bg-[#d19f54f8]`}>
+                    {/* <button disabled={!captchaMatch} className={`w-full py-2 mt-4 rounded-md  text-white ${!captchaMatch ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#D1A054B3] hover:bg-[#d19f54f8]'}`}>
                         Login
                     </button> */}
+                    <button className={`w-full py-2 mt-4 rounded-md  text-white bg-[#D1A054B3] hover:bg-[#d19f54f8]`}>
+                        Login
+                    </button>
                     <div className="divider"></div>
                     {/* <SocialLogin></SocialLogin> */}
 

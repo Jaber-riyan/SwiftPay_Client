@@ -10,7 +10,7 @@ import auth from '../../../Firebase/Firebase.config';
 import useAuth from '../../../Hooks/UseAuth/UseAuth';
 import UseAxiosNormal from '../../../Hooks/UseAxiosSecureAndNormal/UseAxiosNormal';
 import SocialLogin from '../../../Components/SocialLogin/SocialLogin';
-import { v4 as uuidv4 } from "uuid";
+import { updatePhoneNumber, PhoneAuthProvider } from "firebase/auth";
 
 
 const ImageHostingKey = import.meta.env.VITE_IMAGE_HOSTING_KEY;
@@ -22,7 +22,7 @@ const Register = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const axiosInstanceNormal = UseAxiosNormal();
-    const { handleRegister, setUser, user, googleRegister } = useAuth();
+    const { handleRegister, setUser } = useAuth()
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
     // redirect if user already logged in
@@ -43,8 +43,6 @@ const Register = () => {
         const role = data?.['accountType'];
         const phoneNumber = data?.number;
         const nid = data?.nid;
-        const deviceId = uuidv4()
-        localStorage.setItem("deviceId", deviceId);
 
         const { data: imageURL } = await axiosInstanceNormal.post(`https://api.imgbb.com/1/upload?key=${ImageHostingKey}`, { image: photo }, {
             headers: {
@@ -54,66 +52,53 @@ const Register = () => {
         // console.table({ name, photo, email, password, image: imageURL?.data?.url });
         // return
 
-        if (pin.length > 5 || pin.length < 5) {
-            toast.error("PIN Should Be 5 Character.");
+        if (pin.length !== 6) {
+            toast.error("PIN Should Be 6 Character.");
             return;
         }
-        console.table({ name, email, phoneNumber, role, nid, pin, image: imageURL?.data?.url, deviceId });
-        // if (!/[A-Z]/.test(pin)) {
-        //     toast.error("Password Must have an Uppercase Letter");
-        //     return;
-        // }
-        // if (!/[a-z]/.test(password)) {
-        //     toast.error("Password Must have an Lowercase Letter");
-        //     return;
-        // }
-
-
-        // handleRegister(email, password)
-        //     .then(async (result) => {
-        //         console.log(result.user);
-        //         updateProfile(auth.currentUser, {
-        //             displayName: name, photoURL: imageURL?.data?.url
-        //         })
-        //         const userInfo = {
-        //             name,
-        //             email,
-        //             lastLoginTime: result.user.metadata.lastSignInTime,
-        //             image: imageURL?.data?.url
-        //         }
-        //         console.log(userInfo);
-        //         const { data } = await axiosInstanceNormal.post('/users', userInfo);
-        //         signOut(auth).then(result => { });
-        //         setUser(null)
-        //         if (data.data.insertedId || data.status === false) {
-        //             console.log(data);
-        //             Swal.fire({
-        //                 title: 'Successfully Created an account!',
-        //                 icon: 'success'
-        //             })
-        //             navigate('/login');
-        //         }
-        //     })
-        //     .catch(error => {
-        //         const errorCode = error.code.split("auth/")[1];
-        //         const formattedError = errorCode
-        //             ?.split("-")
-        //             ?.map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        //             ?.join(" ");
-        //         toast.error(formattedError);
-        //     })
+        console.table({ name, email, phoneNumber, role, nid, pin, image: imageURL?.data?.url });
 
         const userInfo = {
-            name, email, phoneNumber, role, nid, pin, image: imageURL?.data?.url, deviceId
+            name, email, phoneNumber, role, nid, pin, image: imageURL?.data?.url
         }
         const { data: userInsertInfo } = await axiosInstanceNormal.post('/users', userInfo);
         console.log(userInsertInfo);
-        if(!userInsertInfo.status){
+        if (!userInsertInfo.status) {
             toast.error(userInsertInfo.message)
         }
-        else{
-            toast.success(userInsertInfo.message)
-            navigate('/login')
+        else {
+            handleRegister(email, pin)
+                .then(async (result) => {
+                    console.log(result.user);
+                    updateProfile(auth.currentUser, {
+                        displayName: name, photoURL: imageURL?.data?.url
+                    })
+                    const updateUserPhoneNumber = async (auth, verificationId, verificationCode) => {
+                        const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
+
+                        try {
+                            await updatePhoneNumber(auth.currentUser, credential);
+                            console.log("Phone number updated successfully!");
+                        } catch (error) {
+                            console.error("Error updating phone number:", error);
+                        }
+                    };
+                    console.log(data);
+                    signOut(auth).then(result => { setUser(null) });
+                    Swal.fire({
+                        title: userInsertInfo?.message,
+                        icon: 'success'
+                    })
+                    navigate('/login');
+                })
+                .catch(error => {
+                    const errorCode = error.code.split("auth/")[1];
+                    const formattedError = errorCode
+                        ?.split("-")
+                        ?.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        ?.join(" ");
+                    toast.error(formattedError);
+                })
         }
     }
 
@@ -223,14 +208,14 @@ const Register = () => {
 
                         <div>
                             <label className="block text-sm font-medium text-[#000]" htmlFor="pin">
-                                Pin (must 5 digit)
+                                Pin (must 6 digit)
                             </label>
                             <input
                                 type="number"
                                 id="pin"
                                 name="pin"
                                 {...register("pin", { required: true })}
-                                placeholder="Enter your password"
+                                placeholder="Enter your 6 digit PIN"
                                 className="w-full px-4 py-2 mt-1 border rounded-md outline-none bg-[#ffffffce] focus:border-gray-400"
                             />
                             {errors.pin && <span className="text-red-500">This field is required</span>}

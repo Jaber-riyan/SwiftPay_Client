@@ -82,7 +82,7 @@ const Navbar = () => {
                         {user && (
                             <div className="dropdown dropdown-bottom dropdown-end">
                                 <button
-                                    title={`${user.displayName}`}
+                                    title={`${user.name}`}
                                     tabIndex={0}
                                     role="button"
                                     className="m-1 transition-all hover:scale-105 focus:outline-none"
@@ -158,7 +158,7 @@ const Navbar = () => {
                     <div className="navbar text-black dark:text-white">
                         <div className="navbar-start animate__animated animate__fadeInLeft">
                             <Link to={'/'}>
-                                <h2 className="text-2xl font-bold cinzel-font text-white">Taskify</h2>
+                                <h2 className="text-2xl font-bold cinzel-font text-white">SwiftPay</h2>
                             </Link>
                         </div>
                         <div className="navbar-end">

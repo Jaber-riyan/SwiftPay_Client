@@ -37,33 +37,42 @@ const Authentication = ({ children }) => {
 
     useEffect(() => {
         setLoading(true);
-        const unsubscribe = onAuthStateChanged(auth, currentUser => {
-
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
-                setUser(currentUser);
-                setLoading(false)
-                // console.log("current user -->", currentUser);
-                const user = { email: currentUser.email }
-                axios.post(`${import.meta.env.VITE_SERVER_BASE_URL}/jwt/create`, user, { withCredentials: true })
-                    .then(data => {
-                        // console.log(data.data);
-                        if (data.data.token) {
-                            // token set in the client side local storage 
-                            localStorage.setItem('authToken', data.data.token)
-                            // setLoading(false);
-                        }
-                    })
+                try {
+                    if (user) {
+                        const userResponse = await axios.get(`${import.meta.env.VITE_SERVER_BASE_URL}/user/${currentUser.email}`);
+                        console.log(userResponse.data);
+                        setUser({ ...user, userDBData: userResponse.data });
+                        return 
+                    }
+
+                    setUser(currentUser)
+
+                    const tokenResponse = await axios.post(`${import.meta.env.VITE_SERVER_BASE_URL}/jwt/create`,
+                        { email: currentUser.email },
+                        { withCredentials: true }
+                    );
+
+                    if (tokenResponse.data.token) {
+                        localStorage.setItem('authToken', tokenResponse.data.token);
+                    }
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                } finally {
+                    setLoading(false);  // ✅ Ensures loading state is turned off
+                }
+            } else {
+                localStorage.removeItem('authToken');
+                setLoading(false);
             }
-            else {
-                localStorage.removeItem('authToken')
-                setLoading(false)
-            }
-            // setLoading(false);
-        })
+        });
+
         return () => {
             unsubscribe();
-        }
-    }, [])
+        };
+    }, []);
+
 
     const authInfo = {
         user,
