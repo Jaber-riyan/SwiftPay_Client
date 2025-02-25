@@ -40,12 +40,12 @@ const Authentication = ({ children }) => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 try {
-                    if (user) {
-                        const userResponse = await axios.get(`${import.meta.env.VITE_SERVER_BASE_URL}/user/${currentUser.email}`);
-                        console.log(userResponse.data);
-                        setUser({ ...user, userDBData: userResponse.data });
-                        return 
-                    }
+                    // if (user) {
+                    //     const userResponse = await axios.get(`${import.meta.env.VITE_SERVER_BASE_URL}/user/${currentUser.email}`);
+                    //     console.log(userResponse.data);
+                    //     setUser({ ...user, userDBData: userResponse.data });
+                    //     return 
+                    // }
 
                     setUser(currentUser)
 

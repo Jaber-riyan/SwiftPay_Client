@@ -3,7 +3,7 @@ import useAuth from '../UseAuth/UseAuth';
 import UseAxiosSecure from '../UseAxiosSecureAndNormal/UseAxiosSecure';
 import { useQuery } from '@tanstack/react-query';
 
-const UseAdmin = () => {
+const UseRole = () => {
     const axiosInstanceSecure = UseAxiosSecure();
     const { user, loading } = useAuth();
 
@@ -25,4 +25,4 @@ const UseAdmin = () => {
     return { role, refetchRole, roleLoading };
 };
 
-export default UseAdmin;
+export default UseRole;

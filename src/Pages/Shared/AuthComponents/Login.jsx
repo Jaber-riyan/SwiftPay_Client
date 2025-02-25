@@ -130,31 +130,33 @@ const Login = () => {
     }
 
     const fillValidCredentials = (type) => {
+        let email, password;
+
         if (type === "admin") {
-            const email = import.meta.env.VITE_ADMIN_EMAIL
-            const password = import.meta.env.VITE_ADMIN_PASSWORD
-
-            setValue("email", email);
-            setValue("password", password);
-            setCaptchaMatch(true)
+            email = import.meta.env.VITE_ADMIN_EMAIL;
+            password = import.meta.env.VITE_ADMIN_PASSWORD;
+        } else if (type === "agent") {
+            email = import.meta.env.VITE_AGENT_EMAIL;
+            password = import.meta.env.VITE_AGENT_PASSWORD;
+        } else {
+            email = import.meta.env.VITE_USER_EMAIL;
+            password = import.meta.env.VITE_USER_PASSWORD;
         }
-        else if (type === "tourGuide") {
-            const email = import.meta.env.VITE_GUIDE_EMAIL
-            const password = import.meta.env.VITE_GUIDE_PASSWORD
 
-            setValue("email", email);
-            setValue("password", password);
-            setCaptchaMatch(true)
-        }
-        else {
-            const email = import.meta.env.VITE_TOURIST_EMAIL
-            const password = import.meta.env.VITE_TOURIST_PASSWORD
+        console.log("Filling credentials:", { email, password });
 
-            setValue("email", email);
-            setValue("password", password);
-            setCaptchaMatch(true)
+        if (!email || !password) {
+            toast.error("Environment variables not loaded properly!");
+            return;
         }
-    }
+
+        setValue("email", email);
+        setValue("pin", password);
+        setCaptchaMatch(true);
+
+        console.log("Filled credentials successfully!");
+    };
+
 
 
     return (
@@ -171,8 +173,16 @@ const Login = () => {
                     {/* auto credential full fill buttons  */}
                     <div className='border-t-2 border-zinc-300 pt-3 pb-3 border-b-2'>
                         <div className='flex gap-2'>
-                            <button onClick={() => fillValidCredentials("tourist")} className={`w-full py-2 mt-4 rounded-md text-white font-semibold bg-[#1D4ED8] hover:bg-[#1e3a8a]`}>
-                                User Credentials (Click Here)
+                            <button onClick={() => fillValidCredentials("user")} className={`w-full py-2 mt-4 rounded-md text-white bg-[#1D4ED8] hover:bg-[#1e3a8a]`}>
+                                User
+                            </button>
+
+                            <button onClick={() => fillValidCredentials("agent")} className={`w-full py-2 mt-4 rounded-md text-white bg-[#10B981] hover:bg-[#059669]`}>
+                                Agent
+                            </button>
+
+                            <button onClick={() => fillValidCredentials("admin")} className={`w-full py-2 mt-4 rounded-md text-white bg-[#F59E0B] hover:bg-[#d97706]`}>
+                                Admin
                             </button>
                         </div>
                     </div>
@@ -238,12 +248,12 @@ const Login = () => {
                     </p>
 
 
-                    {/* <button disabled={!captchaMatch} className={`w-full py-2 mt-4 rounded-md  text-white ${!captchaMatch ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#D1A054B3] hover:bg-[#d19f54f8]'}`}>
-                        Login
-                    </button> */}
-                    <button className={`w-full py-2 mt-4 rounded-md  text-white bg-[#D1A054B3] hover:bg-[#d19f54f8]`}>
+                    <button disabled={!captchaMatch} className={`w-full py-2 mt-4 rounded-md  text-white ${!captchaMatch ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#D1A054B3] hover:bg-[#d19f54f8]'}`}>
                         Login
                     </button>
+                    {/* <button className={`w-full py-2 mt-4 rounded-md  text-white bg-[#D1A054B3] hover:bg-[#d19f54f8]`}>
+                        Login
+                    </button> */}
                     <div className="divider"></div>
                     {/* <SocialLogin></SocialLogin> */}
 

@@ -211,7 +211,7 @@ const Register = () => {
                                 Pin (must 6 digit)
                             </label>
                             <input
-                                type="number"
+                                type="password"
                                 id="pin"
                                 name="pin"
                                 {...register("pin", { required: true })}
