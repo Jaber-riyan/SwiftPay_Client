@@ -5,6 +5,9 @@ import Register from '../Pages/Shared/AuthComponents/Register';
 import MainLayout from '../Layout/MainLayout/MainLayout';
 import Home from '../Pages/Home/Home';
 import PrivateRoutes from './PrivateRoutes/PrivateRoutes';
+import AdminDashboard from '../Pages/Admin/AdminDashboard/AdminDashboard';
+import AgentDashboard from '../Pages/Agent/AgentDashboard/AgentDashboard';
+import UserDashboard from '../Pages/Users/UserDashboard/UserDashboard';
 
 const router = createBrowserRouter([
     {
@@ -24,6 +27,18 @@ const router = createBrowserRouter([
                 path: 'register',
                 element: <Register></Register>
             },
+            {
+                path: 'admin/dashboard',
+                element: <PrivateRoutes><AdminDashboard></AdminDashboard></PrivateRoutes>
+            },
+            {
+                path: 'agent/dashboard',
+                element: <PrivateRoutes><AgentDashboard></AgentDashboard></PrivateRoutes>
+            },
+            {
+                path: 'user/dashboard',
+                element: <PrivateRoutes><UserDashboard></UserDashboard></PrivateRoutes>
+            }
         ]
     },
 ])

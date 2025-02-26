@@ -80,19 +80,24 @@ const Login = () => {
         const { data: userInsertInfo } = await axiosInstanceNormal.post('/login-user', userInfo);
         console.log(userInsertInfo);
         if (!userInsertInfo.status) {
-            Swal.fire({
-                title: "You are already logged in on another device Do you want to Logout from all devices?",
-                showDenyButton: true,
-                confirmButtonText: "Yes",
-                denyButtonText: `No`
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    const { data } = await axiosInstanceNormal.get(`/logout-all-devices/${email}`)
-                    if (data.status) {
-                        toast.success(data.message);
+            if (userInsertInfo.deviceLogin) {
+                Swal.fire({
+                    title: userInsertInfo.message,
+                    showDenyButton: true,
+                    confirmButtonText: "Yes",
+                    denyButtonText: `No`
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        const { data } = await axiosInstanceNormal.get(`/logout-all-devices/${email}`)
+                        if (data.status) {
+                            toast.success(data.message);
+                        }
                     }
-                }
-            });
+                });
+            }
+            else{
+                toast.error(userInsertInfo.message)
+            }
         }
         else {
             handleLogin(email, pin)
@@ -248,12 +253,12 @@ const Login = () => {
                     </p>
 
 
-                    <button disabled={!captchaMatch} className={`w-full py-2 mt-4 rounded-md  text-white ${!captchaMatch ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#D1A054B3] hover:bg-[#d19f54f8]'}`}>
-                        Login
-                    </button>
-                    {/* <button className={`w-full py-2 mt-4 rounded-md  text-white bg-[#D1A054B3] hover:bg-[#d19f54f8]`}>
+                    {/* <button disabled={!captchaMatch} className={`w-full py-2 mt-4 rounded-md  text-white ${!captchaMatch ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#D1A054B3] hover:bg-[#d19f54f8]'}`}>
                         Login
                     </button> */}
+                    <button className={`w-full py-2 mt-4 rounded-md  text-white bg-[#D1A054B3] hover:bg-[#d19f54f8]`}>
+                        Login
+                    </button>
                     <div className="divider"></div>
                     {/* <SocialLogin></SocialLogin> */}
 

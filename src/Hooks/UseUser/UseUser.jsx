@@ -9,7 +9,7 @@ const UseUser = () => {
 
 
 
-    const { data: userData = {}, refetch: userRefetch } = useQuery({
+    const { data: userData = {}, refetch: userRefetch, isLoading: userLoading } = useQuery({
         queryKey: [user?.email, "user"],
         queryFn: async () => {
             const { data } = await axiosInstanceSecure.get(`/user/${user?.email}`)
@@ -17,7 +17,7 @@ const UseUser = () => {
         }
     })
 
-    return { userData, userRefetch }
+    return { userData, userRefetch, userLoading }
 };
 
 export default UseUser;

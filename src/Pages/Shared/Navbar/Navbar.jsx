@@ -5,11 +5,13 @@ import Swal from 'sweetalert2';
 import useAuth from '../../../Hooks/UseAuth/UseAuth';
 import UseTheme from '../../../Hooks/UseTheme/UseTheme';
 import { useEffect } from 'react';
+import UseRole from '../../../Hooks/UseRole/UseRole';
 
 const Navbar = () => {
     const navigate = useNavigate();
     const { user, handleLogout, setUser } = useAuth();
     const { theme, setTheme } = UseTheme();
+    const { role } = UseRole()
 
     // Toggle Theme Function
     const toggleTheme = () => {
@@ -49,24 +51,14 @@ const Navbar = () => {
                 Home
             </NavLink>
             <NavLink
-                to="/add-task"
+                to={role == "admin" ? "admin/dashboard" : role == "agent" ? "agent/dashboard" : "user/dashboard"}
                 className={({ isActive }) =>
                     isActive
                         ? "hover:text-white/70 text-[#0040fffd] font-[700] text-[14px] cursor-pointer uppercase"
                         : "hover:text-white/70 text-white font-[700] text-[14px] cursor-pointer uppercase"
                 }
             >
-                Add Task
-            </NavLink>
-            <NavLink
-                to="/activity"
-                className={({ isActive }) =>
-                    isActive
-                        ? "hover:text-white/70 text-[#0040fffd] font-[700] text-[14px] cursor-pointer uppercase"
-                        : "hover:text-white/70 text-white font-[700] text-[14px] cursor-pointer uppercase"
-                }
-            >
-                Activity
+                Dashboard
             </NavLink>
 
             {user?.email ? (
