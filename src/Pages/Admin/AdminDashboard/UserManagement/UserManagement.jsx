@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import UseAxiosSecure from '../../../../Hooks/UseAxiosSecureAndNormal/UseAxiosSecure';
 import { useQuery } from '@tanstack/react-query';
@@ -6,9 +6,14 @@ import Loading from '../../../Shared/Loading/Loading';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import UserManagementCard from './UserManagementCard/UserManagementCard';
+import UserTransactionCard from '../../../Users/UserDashboard/UserTransactions/UserTransactionCard/UserTransactionCard';
+import AgentTransactionCard from '../../../Agent/AgentDashboard/AgentTransactions/AgentTransactionCard/AgentTransactionCard';
 
 const UserManagement = () => {
     const axiosInstanceSecure = UseAxiosSecure()
+    const [isOpen, setIsOpen] = useState(false)
+    const [modalData, setModalData] = useState([])
+    const [roleModal, setRoleModal] = useState("")
 
     const { data: allUsers, isLoading, refetch } = useQuery({
         queryKey: ['allUsers'],
@@ -61,6 +66,20 @@ const UserManagement = () => {
         });
     }
 
+    const getData = async (user) => {
+        const role = user?.role
+        setModalData([])
+        setRoleModal(role)
+        if (role == "user") {
+            const { data = [] } = await axiosInstanceSecure.get(`/transactions/user/${user?.email}`)
+            setModalData(data.data)
+        }
+        else {
+            const { data = [] } = await axiosInstanceSecure.get(`/transactions/agent/${user?.email}`)
+            setModalData(data.data)
+        }
+    }
+
 
     if (isLoading) {
         return <Loading></Loading>
@@ -87,8 +106,8 @@ const UserManagement = () => {
                                         <th className="py-2 px-4 text-left tracking-[2px] rounded-tl-2xl">NO</th>
                                         <th className="py-2 px-4 text-left tracking-[2px]">USER NAME</th>
                                         <th className="py-2 px-4 text-left tracking-[2px]">USER EMAIL</th>
-                                        <th className="py-2 px-4 text-left tracking-[2px]">USER PHONE NUMBER</th>
                                         <th className="py-2 px-4 text-left tracking-[2px]">USER NID</th>
+                                        <th className="py-2 px-4 text-left tracking-[2px]">BALANCE</th>
                                         <th className="py-2 px-4 text-left tracking-[2px]">STATUS</th>
                                         <th className="py-2 px-4 text-left tracking-[2px]">ROLE</th>
                                         <th className="py-2 px-4 text-left tracking-[2px]">BLOCK</th>
@@ -98,7 +117,7 @@ const UserManagement = () => {
                                 <tbody>
                                     {
                                         allUsers?.length > 0 ? allUsers?.map((user, index) => {
-                                            return <UserManagementCard key={user?._id} handleUnblock={handleUnblock} handleBlock={handleBlock} user={user} index={index}></UserManagementCard>
+                                            return <UserManagementCard key={user?._id} handleUnblock={handleUnblock} handleBlock={handleBlock} setIsOpen={setIsOpen} getData={getData} user={user} index={index}></UserManagementCard>
                                         }) :
                                             <tr className='text-3xl font-bold text-center text-red-600'>
                                                 <td></td>
@@ -114,6 +133,68 @@ const UserManagement = () => {
                     </div>
                 </div>
             </div>
+
+            {
+                isOpen && <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                    <div className='px-12 py-10 bg-white dark:bg-gray-800 dark:text-white'>
+                        <div className='cinzel-font flex justify-between mb-10 items-center'>
+                            <h2 className='text-[#151515] font-bold text-2xl dark:text-white'>Total Transactions: {modalData?.length}</h2>
+                        </div>
+                        <div className="animate__animated animate__fadeInUp">
+                            <div className="overflow-y-auto min-h-[50vh] custom-scrollbar">
+                                <table className="min-w-full table-fixed">
+                                    <thead className='sticky top-0 bg-[#D1A054] dark:bg-[#D1A054] text-white'>
+                                        {
+                                            roleModal == "user" 
+                                            ? 
+                                            <tr>
+                                                <th className="py-2 px-4 text-left tracking-[2px] rounded-tl-2xl">NO</th>
+                                                <th className="py-2 px-4 text-left tracking-[2px]">SENDER PHONE NUMBER</th>
+                                                <th className="py-2 px-4 text-left tracking-[2px]">SENDER EMAIL</th>
+                                                <th className="py-2 px-4 text-left tracking-[2px]">AMOUNT</th>
+                                                <th className="py-2 px-4 text-left tracking-[2px]">FEE</th>
+                                                <th className="py-2 px-4 text-left tracking-[2px]">STATUS</th>
+                                                <th className="py-2 px-4 text-left tracking-[2px]">TXID</th>
+                                                <th className="py-2 px-4 text-left tracking-[2px]">TYPE</th>
+                                                <th className="py-2 px-4 text-left tracking-[2px] rounded-tr-2xl">TIMESTAMP</th>
+                                            </tr> :
+                                                <tr>
+                                                    <th className="py-2 px-4 text-left tracking-[2px] rounded-tl-2xl">NO</th>
+                                                    <th className="py-2 px-4 text-left tracking-[2px]">SENDER PHONE NUMBER</th>
+                                                    <th className="py-2 px-4 text-left tracking-[2px]">SENDER EMAIL</th>
+                                                    <th className="py-2 px-4 text-left tracking-[2px]">AMOUNT</th>
+                                                    <th className="py-2 px-4 text-left tracking-[2px]">FEE</th>
+                                                    <th className="py-2 px-4 text-left tracking-[2px]">STATUS</th>
+                                                    <th className="py-2 px-4 text-left tracking-[2px]">TXID</th>
+                                                    <th className="py-2 px-4 text-left tracking-[2px]">TYPE</th>
+                                                    <th className="py-2 px-4 text-left tracking-[2px] rounded-tr-2xl">TIMESTAMP</th>
+                                                </tr>
+                                        }
+                                    </thead>
+                                    <tbody>
+                                        {
+
+                                            modalData?.length > 0 ? modalData?.map((transaction, index) => {
+                                                return roleModal == "user" ? <UserTransactionCard key={transaction?._id} transaction={transaction} index={index}></UserTransactionCard> : <AgentTransactionCard key={transaction?._id} transaction={transaction} index={index}></AgentTransactionCard>
+                                            }) :
+                                                <tr className='text-3xl font-bold text-center text-red-600'>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td><h2 className='p-6'>No Transactions</h2></td>
+                                                    <td></td>
+                                                </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <div className='flex justify-center mt-5'>
+                                    <button onClick={() => setIsOpen(!isOpen)} className='btn btn-primary'>Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     );
 };

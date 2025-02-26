@@ -10,7 +10,7 @@ function AgentTransactionCard({ transaction, index }) {
             </td>
             <td className="py-2 px-4 text-[#737373] dark:text-gray-300">{senderEmail}</td>
             <td className="py-2 px-4 text-[#737373] dark:text-gray-300">{amount}</td>
-            <td className="py-2 px-4 text-[#737373] dark:text-gray-300">{adminProfit + agentProfit}</td>
+            <td className="py-2 px-4 text-[#737373] dark:text-gray-300">{adminProfit + agentProfit || 0}</td>
             <td className="py-2 px-4 text-[#737373]">
                 <button className={`font-bold text-[1rem] capitalize btn text-white ${status == "accepted" ? 'bg-green-600' : status == "canceled" ? 'bg-red-600' : 'bg-sky-500'}`}>{status}</button>
             </td>

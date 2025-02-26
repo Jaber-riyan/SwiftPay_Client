@@ -17,6 +17,7 @@ function UsersHome() {
     const [showBalance, setShowBalance] = useState(false)
     const [sendMoneyOpen, setSendMoneyOpen] = useState(false)
     const [cashOutOpen, setCashOutOpen] = useState(false)
+    const [cashInOpen, setCashInOpen] = useState(false)
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
     const axiosInstanceSecure = UseAxiosSecure()
     const { agents } = UseAgents()
@@ -53,7 +54,7 @@ function UsersHome() {
             }
             const { data: transactionData } = await axiosInstanceSecure.post('/transactions', transactionInfo)
             console.log(transactionData.transaction);
-            setSendMoneyOpen(false)
+            setSendMoneyOpen(!sendMoneyOpen)
             userRefetch()
             toast.success(sendMoneyData?.message)
             reset()
@@ -88,12 +89,45 @@ function UsersHome() {
         const { data: responseCashOut } = await axiosInstanceSecure.post('/cash-out', transactionInfo)
         if (responseCashOut.status) {
             console.log(responseCashOut.body, responseCashOut);
+            setCashOutOpen(!cashOutOpen)
+            reset()
             toast.success(responseCashOut.message)
         }
         else {
             toast.error(responseCashOut.message)
         }
         // setCashOutOpen(false)
+    }
+
+    const handleCashIn = async (data) => {
+        const amount = data.amountCashIn
+        const agentEmail = data.selectedAgentCashIn
+        const senderEmail = userData?.email
+
+        const transactionInfo = {
+            senderEmail,
+            senderPhoneNumber: userData?.phoneNumber,
+            agentEmail,
+            type: "cash in user",
+            status: "pending",
+            amount,
+            timestamp: new Date().toISOString(),
+            txId: `${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`
+        }
+
+        const { data: responseCashIn } = await axiosInstanceSecure.post('/cash-in', transactionInfo)
+
+        if (responseCashIn.status) {
+            console.log(responseCashIn.insertedDoc);
+            setCashInOpen(!cashInOpen)
+            reset()
+            toast.success(responseCashIn.message)
+        }
+        else {
+            toast.error(responseCashIn.message)
+        }
+
+        // console.log(data);
     }
 
 
@@ -146,7 +180,7 @@ function UsersHome() {
                         <button className='text-2xl font-bold flex items-center gap-2 justify-center'><span>Cash Out</span> <CiInboxOut size={30} /></button>
                     </div>
 
-                    <div className='p-5 bg-green-600 hover:bg-green-700 rounded-2xl'>
+                    <div onClick={() => setCashInOpen(!cashInOpen)} className='p-5 bg-green-600 hover:bg-green-700 rounded-2xl'>
                         <button className='text-2xl font-bold flex items-center gap-2 justify-center'><span>Cash In</span> <CiInboxIn size={30} /></button>
                     </div>
                 </div>
@@ -231,7 +265,7 @@ function UsersHome() {
                                     className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="Enter amount"
                                 />
-                                {errors.amount && <p className="text-red-500 text-sm">{errors.amount.message}</p>}
+                                {errors.amountCashOut && <p className="text-red-500 text-sm">{errors.amount.message}</p>}
                             </div>
 
                             {/* Agents Dropdown */}
@@ -262,7 +296,7 @@ function UsersHome() {
                                     className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="Enter PIN number"
                                 />
-                                {errors.pin && <p className="text-red-500 text-sm">{errors.pin.message}</p>}
+                                {errors.pinCashOut && <p className="text-red-500 text-sm">{errors.pin.message}</p>}
                             </div>
 
                             {/* Buttons */}
@@ -278,6 +312,61 @@ function UsersHome() {
                     </div>
                 </div>
             )}
+
+            {/* cash in modal */}
+            {cashInOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                    <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96 animate__animated animate__fadeIn">
+                        <h2 className="text-2xl font-bold mb-4 text-center">Send Money</h2>
+
+                        <form onSubmit={handleSubmit(handleCashIn)} className="space-y-4">
+                            {/* Amount Field */}
+                            <div>
+                                <label className="block mb-1">Amount (৳)</label>
+                                <input
+                                    type="number"
+                                    {...register("amountCashIn", { required: "Amount is required" })}
+                                    className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Enter amount"
+                                />
+                                {errors.amountCashIn && <p className="text-red-500 text-sm">{errors.amount.message}</p>}
+                            </div>
+
+                            {/* Agents Dropdown */}
+                            <div>
+                                <label className="block mb-1">Select Agent</label>
+                                <select
+                                    {...register("selectedAgentCashIn", { required: "Please select an agent" })}
+                                    className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="">Select an agent</option>
+                                    {agents.map((agent) => (
+                                        <option key={agent._id} value={agent.email}>
+                                            {agent.name} (৳{agent.balance})
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.selectedAgentCashIn && <p className="text-red-500 text-sm">{errors.selectedAgent.message}</p>}
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="flex justify-between">
+                                <button type="button" onClick={() => {
+                                    setCashInOpen(!cashInOpen)
+                                    reset()
+                                }
+                                } className="bg-gray-600 px-4 py-2 rounded hover:bg-gray-700">
+                                    Cancel
+                                </button>
+                                <button type="submit" className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">
+                                    Send
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )
+            }
         </div>
     )
 }

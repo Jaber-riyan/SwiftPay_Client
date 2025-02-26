@@ -1,16 +1,19 @@
 import React from 'react'
 
-export default function UserManagementCard({ user, index, handleBlock, handleUnblock }) {
-    const { name, email, phoneNumber, nid, role, block, status } = user
+export default function UserManagementCard({ user, index, handleBlock, handleUnblock, setIsOpen, getData }) {
+    const { name, email, phoneNumber, nid, role, block, status,balance } = user
     return (
         <tr className="border-b border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800">
             <td className='p-5 font-bold text-xl dark:text-white'>{index + 1}</td>
-            <td className="py-2 px-4 text-[#737373] capitalize dark:text-gray-300">
+            <td onClick={() => {
+                setIsOpen(true)
+                getData(user)
+            }} className="py-2 px-4 text-[#737373] capitalize dark:text-gray-300">
                 {name}
             </td>
             <td className="py-2 px-4 text-[#737373] dark:text-gray-300">{email}</td>
-            <td className="py-2 px-4 text-[#737373] dark:text-gray-300">{phoneNumber}</td>
             <td className="py-2 px-4 text-[#737373] dark:text-gray-300">{nid}</td>
+            <td className="py-2 px-4 text-[#737373] dark:text-gray-300">{balance}</td>
             <td className="py-2 px-4 text-[#737373] dark:text-gray-300 capitalize">{status || "complete"}</td>
             <td className="py-2 px-4 text-[#737373] dark:text-gray-300 capitalize">{role}</td>
             <td className="py-2 px-4 text-[#737373]">
