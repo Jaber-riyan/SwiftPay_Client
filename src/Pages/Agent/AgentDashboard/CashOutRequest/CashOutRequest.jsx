@@ -109,7 +109,10 @@ function CashOutRequest() {
                                             <tr className='text-3xl font-bold text-center text-red-600'>
                                                 <td></td>
                                                 <td></td>
+                                                <td></td>
                                                 <td><h2 className='p-6'>No Request</h2></td>
+                                                <td></td>
+                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                             </tr>

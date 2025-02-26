@@ -30,7 +30,7 @@ function AgentHome() {
           />
           <button
             onClick={() => setShowBalance(!showBalance)}
-            className='md:text-xl bg-gray-900'
+            className='md:text-xl bg-gray-900 text-white'
           >
             {showBalance ? "Hide" : "Show"} ৳
           </button>

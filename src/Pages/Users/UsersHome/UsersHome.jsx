@@ -3,7 +3,7 @@ import UseRole from '../../../Hooks/UseRole/UseRole'
 import useAuth from '../../../Hooks/UseAuth/UseAuth'
 import UseUser from '../../../Hooks/UseUser/UseUser'
 import { LuSend } from "react-icons/lu";
-import { CiInboxOut } from "react-icons/ci";
+import { CiInboxIn, CiInboxOut } from "react-icons/ci";
 import { useForm } from 'react-hook-form';
 import UseAxiosSecure from '../../../Hooks/UseAxiosSecureAndNormal/UseAxiosSecure';
 import { toast } from 'react-toastify';
@@ -119,7 +119,7 @@ function UsersHome() {
                     />
                     <button
                         onClick={() => setShowBalance(!showBalance)}
-                        className='md:text-xl bg-gray-900'
+                        className='md:text-xl bg-gray-900 text-white'
                     >
                         {showBalance ? "Hide" : "Show"} ৳
                     </button>
@@ -146,8 +146,8 @@ function UsersHome() {
                         <button className='text-2xl font-bold flex items-center gap-2 justify-center'><span>Cash Out</span> <CiInboxOut size={30} /></button>
                     </div>
 
-                    <div onClick={() => setCashOutOpen(true)} className='p-5 bg-green-600 hover:bg-green-700 rounded-2xl'>
-                        <button className='text-2xl font-bold flex items-center gap-2 justify-center'><span>Cash In</span> <CiInboxOut size={30} /></button>
+                    <div className='p-5 bg-green-600 hover:bg-green-700 rounded-2xl'>
+                        <button className='text-2xl font-bold flex items-center gap-2 justify-center'><span>Cash In</span> <CiInboxIn size={30} /></button>
                     </div>
                 </div>
             </div>

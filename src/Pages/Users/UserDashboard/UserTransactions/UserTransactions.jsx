@@ -1,29 +1,21 @@
-import React from 'react'
-import { Helmet } from 'react-helmet-async'
-import UseAxiosSecure from '../../../../Hooks/UseAxiosSecureAndNormal/UseAxiosSecure'
-import { useQuery } from '@tanstack/react-query'
-import UseUser from '../../../../Hooks/UseUser/UseUser'
-import Loading from '../../../Shared/Loading/Loading'
-import AgentTransactionCard from './AgentTransactionCard/AgentTransactionCard'
+import React from 'react';
+import { Helmet } from 'react-helmet-async';
+import UseAxiosSecure from '../../../../Hooks/UseAxiosSecureAndNormal/UseAxiosSecure';
+import { useQuery } from '@tanstack/react-query';
+import UseUser from '../../../../Hooks/UseUser/UseUser';
+import UserTransactionCard from './UserTransactionCard/UserTransactionCard';
 
-const AgentTransactions = () => {
+const UserTransactions = () => {
     const axiosInstanceSecure = UseAxiosSecure()
-    const { userData, userLoading } = UseUser()
+    const { userData } = UseUser()
 
-    const { data: agentTransactions, isLoading } = useQuery({
-        queryKey: ['agentTransactions'],
+    const { data:userTransactions } = useQuery({
+        queryKey: ['userTransactions'],
         queryFn: async () => {
-            const { data } = await axiosInstanceSecure.get(`/transactions/agent/${userData?.email}`)
+            const { data } = await axiosInstanceSecure.get(`/transactions/user/${userData?.email}`)
             return data.data
         }
     })
-
-    if (userLoading) {
-        return <Loading></Loading>
-    }
-    if (isLoading) {
-        return <Loading></Loading>
-    }
 
     return (
         <div>
@@ -37,7 +29,7 @@ const AgentTransactions = () => {
                 </div> */}
                 <div className='px-12 py-10 bg-white dark:bg-gray-800 dark:text-white'>
                     <div className='cinzel-font flex justify-between mb-10 items-center'>
-                        <h2 className='text-[#151515] font-bold text-2xl dark:text-white'>Total Transactions: {agentTransactions?.length}</h2>
+                        {/* <h2 className='text-[#151515] font-bold text-2xl dark:text-white'>Total Transactions: {agentTransactions?.length}</h2> */}
                     </div>
                     <div className="animate__animated animate__fadeInUp">
                         <div className="overflow-y-auto min-h-[50vh] custom-scrollbar">
@@ -57,17 +49,13 @@ const AgentTransactions = () => {
                                 </thead>
                                 <tbody>
                                     {
-                                        agentTransactions?.length > 0 ? agentTransactions?.map((transaction, index) => {
-                                            return <AgentTransactionCard key={transaction?._id} transaction={transaction} index={index}></AgentTransactionCard>
+                                        userTransactions?.length > 0 ? userTransactions?.map((transaction, index) => {
+                                            return <UserTransactionCard key={transaction?._id} transaction={transaction} index={index}></UserTransactionCard>
                                         }) :
                                             <tr className='text-3xl font-bold text-center text-red-600'>
                                                 <td></td>
                                                 <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td><h2 className='p-6'>No Transactions</h2></td>
-                                                <td></td>
-                                                <td></td>
+                                                <td><h2 className='p-6'>No Request</h2></td>
                                                 <td></td>
                                                 <td></td>
                                             </tr>
@@ -79,7 +67,7 @@ const AgentTransactions = () => {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default AgentTransactions
+export default UserTransactions;
