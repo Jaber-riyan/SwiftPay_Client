@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import UseUser from '../../../Hooks/UseUser/UseUser'
 import { Link } from 'react-router-dom'
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs'
+import AdminTransactions from './AdminTransactions/AdminTransactions'
+import AgentRequest from './AgentRequest/AgentRequest'
 
-function AdminDashboard() {
+const AdminDashboard = () => {
 
   return (
     <div>
@@ -22,9 +24,36 @@ function AdminDashboard() {
                   >
                     All Transactions
                   </Tab>
+                  <Tab
+                    className="py-2 px-4 cursor-pointer focus:outline-none uppercase font-bold dark:text-white text-zinc-700 select-none"
+                    selectedClassName="py-2 px-4 cursor-pointer border-b-4 border-[#BB8506] text-[#BB8506] dark:border-[#BB8506] dark:text-[#BB8506] select-none"
+                  >
+                    Agent Request
+                  </Tab>
+                  <Tab
+                    className="py-2 px-4 cursor-pointer focus:outline-none uppercase font-bold dark:text-white text-zinc-700 select-none"
+                    selectedClassName="py-2 px-4 cursor-pointer border-b-4 border-[#BB8506] text-[#BB8506] dark:border-[#BB8506] dark:text-[#BB8506] select-none"
+                  >
+                    Agent Cash In Request
+                  </Tab>
+                  <Tab
+                    className="py-2 px-4 cursor-pointer focus:outline-none uppercase font-bold dark:text-white text-zinc-700 select-none"
+                    selectedClassName="py-2 px-4 cursor-pointer border-b-4 border-[#BB8506] text-[#BB8506] dark:border-[#BB8506] dark:text-[#BB8506] select-none"
+                  >
+                    User Management
+                  </Tab>
                 </TabList>
                 <TabPanel>
-                  <div>transactions</div>
+                  <AdminTransactions></AdminTransactions>
+                </TabPanel>
+                <TabPanel>
+                  <AgentRequest></AgentRequest>
+                </TabPanel>
+                <TabPanel>
+                  <AgentRequest></AgentRequest>
+                </TabPanel>
+                <TabPanel>
+                  <AgentRequest></AgentRequest>
                 </TabPanel>
               </Tabs>
             </section>

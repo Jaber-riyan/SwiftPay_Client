@@ -1,26 +1,29 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Helmet, HelmetData } from 'react-helmet-async';
 import UseAxiosSecure from '../../../../Hooks/UseAxiosSecureAndNormal/UseAxiosSecure';
 import { useQuery } from '@tanstack/react-query';
-import UseUser from '../../../../Hooks/UseUser/UseUser';
-import UserTransactionCard from './UserTransactionCard/UserTransactionCard';
+import Loading from '../../../Shared/Loading/Loading';
+import AdminTransactionCard from './AdminTransactionCard/AdminTransactionCard';
 
-const UserTransactions = () => {
+const AdminTransactions = () => {
     const axiosInstanceSecure = UseAxiosSecure()
-    const { userData } = UseUser()
 
-    const { data: userTransactions } = useQuery({
-        queryKey: ['userTransactions'],
+    const { data:adminTransactions, isLoading } = useQuery({
+        queryKey: ['adminTransaction'],
         queryFn: async () => {
-            const { data } = await axiosInstanceSecure.get(`/transactions/user/${userData?.email}`)
+            const { data } = await axiosInstanceSecure.get('/transactions/admin')
             return data.data
         }
     })
 
+    if(isLoading) {
+        return <Loading></Loading>
+    }
+
     return (
         <div>
             <div className='pb-32 mt-10'>
-                <Helmet><title>Transactions | SwiftPay</title></Helmet>
+                <Helmet><title>All Transactions | SwiftPay</title></Helmet>
                 {/* <div className="text-center py-8 mb-12">
                     <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
                         Manage All <span className="text-orange-600 capitalize"> Bookings </span>
@@ -29,7 +32,7 @@ const UserTransactions = () => {
                 </div> */}
                 <div className='px-12 py-10 bg-white dark:bg-gray-800 dark:text-white'>
                     <div className='cinzel-font flex justify-between mb-10 items-center'>
-                        <h2 className='text-[#151515] font-bold text-2xl dark:text-white'>Total Transactions: {userTransactions?.length}</h2>
+                        <h2 className='text-[#151515] font-bold text-2xl dark:text-white'>Total Transactions: {adminTransactions?.length}</h2>
                     </div>
                     <div className="animate__animated animate__fadeInUp">
                         <div className="overflow-y-auto min-h-[50vh] custom-scrollbar">
@@ -49,13 +52,13 @@ const UserTransactions = () => {
                                 </thead>
                                 <tbody>
                                     {
-                                        userTransactions?.length > 0 ? userTransactions?.slice(0,100).map((transaction, index) => {
-                                            return <UserTransactionCard key={transaction?._id} transaction={transaction} index={index}></UserTransactionCard>
+                                        adminTransactions?.length > 0 ? adminTransactions?.map((transaction, index) => {
+                                            return <AdminTransactionCard key={transaction?._id} transaction={transaction} index={index}></AdminTransactionCard>
                                         }) :
                                             <tr className='text-3xl font-bold text-center text-red-600'>
                                                 <td></td>
                                                 <td></td>
-                                                <td><h2 className='p-6'>No Request</h2></td>
+                                                <td><h2 className='p-6'>No Transactions</h2></td>
                                                 <td></td>
                                                 <td></td>
                                             </tr>
@@ -70,4 +73,4 @@ const UserTransactions = () => {
     );
 };
 
-export default UserTransactions;
+export default AdminTransactions;

@@ -57,7 +57,7 @@ const AgentTransactions = () => {
                                 </thead>
                                 <tbody>
                                     {
-                                        agentTransactions?.length > 0 ? agentTransactions?.map((transaction, index) => {
+                                        agentTransactions?.length > 0 ? agentTransactions?.slice(0, 100).map((transaction, index) => {
                                             return <AgentTransactionCard key={transaction?._id} transaction={transaction} index={index}></AgentTransactionCard>
                                         }) :
                                             <tr className='text-3xl font-bold text-center text-red-600'>

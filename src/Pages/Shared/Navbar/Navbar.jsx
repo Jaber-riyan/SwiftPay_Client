@@ -73,7 +73,7 @@ const Navbar = () => {
                         {user && (
                             <div className="dropdown dropdown-bottom dropdown-end">
                                 <button
-                                    title={`${user.name}`}
+                                    title={`${user.displayName}`}
                                     tabIndex={0}
                                     role="button"
                                     className="m-1 transition-all hover:scale-105 focus:outline-none"
