@@ -30,7 +30,7 @@ function CashOutRequest() {
             if (result.isConfirmed) {
                 const { data } = await axiosInstanceSecure.post('/cash-out/accept', request)
                 if (data.status) {
-                    console.log(data.request);
+                    console.log(data.body);
                     toast.success(data.message)
                     cashOutRefetch()
                     userRefetch()
