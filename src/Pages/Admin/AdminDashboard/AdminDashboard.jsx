@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs'
 import AdminTransactions from './AdminTransactions/AdminTransactions'
 import AgentRequest from './AgentRequest/AgentRequest'
+import UserManagement from './UserManagement/UserManagement'
 
 const AdminDashboard = () => {
 
@@ -53,7 +54,7 @@ const AdminDashboard = () => {
                   <AgentRequest></AgentRequest>
                 </TabPanel>
                 <TabPanel>
-                  <AgentRequest></AgentRequest>
+                  <UserManagement></UserManagement>
                 </TabPanel>
               </Tabs>
             </section>
