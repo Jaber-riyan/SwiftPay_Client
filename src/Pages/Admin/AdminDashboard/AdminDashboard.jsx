@@ -5,6 +5,7 @@ import { Tab, TabList, TabPanel, Tabs } from 'react-tabs'
 import AdminTransactions from './AdminTransactions/AdminTransactions'
 import AgentRequest from './AgentRequest/AgentRequest'
 import UserManagement from './UserManagement/UserManagement'
+import AgentCashInRequest from './AgentCashInRequest/AgentCashInRequest'
 
 const AdminDashboard = () => {
 
@@ -51,7 +52,7 @@ const AdminDashboard = () => {
                   <AgentRequest></AgentRequest>
                 </TabPanel>
                 <TabPanel>
-                  <AgentRequest></AgentRequest>
+                  <AgentCashInRequest></AgentCashInRequest>
                 </TabPanel>
                 <TabPanel>
                   <UserManagement></UserManagement>

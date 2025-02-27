@@ -32,12 +32,12 @@ const Login = () => {
     }, [])
 
 
-    // useEffect(() => {
-    //     if (user) {
-    //         toast.info("You Logged in ")
-    //         navigate(location?.state || '/');
-    //     }
-    // }, [user, navigate, location]);
+    useEffect(() => {
+        if (user) {
+            toast.info("You Logged in ")
+            navigate(location?.state || '/');
+        }
+    }, [user, navigate, location]);
 
 
     const handleValidateCaptcha = (e) => {
@@ -79,25 +79,24 @@ const Login = () => {
         }
         const { data: userInsertInfo } = await axiosInstanceNormal.post('/login-user', userInfo);
         console.log(userInsertInfo);
-        if (!userInsertInfo.status) {
-            if (userInsertInfo.deviceLogin) {
-                Swal.fire({
-                    title: userInsertInfo.message,
-                    showDenyButton: true,
-                    confirmButtonText: "Yes",
-                    denyButtonText: `No`
-                }).then(async (result) => {
-                    if (result.isConfirmed) {
-                        const { data } = await axiosInstanceNormal.get(`/logout-all-devices/${email}`)
-                        if (data.status) {
-                            toast.success(data.message);
-                        }
+        if (userInsertInfo.deviceLogin) {
+            Swal.fire({
+                title: userInsertInfo.message,
+                showDenyButton: true,
+                confirmButtonText: "Yes",
+                denyButtonText: `No`
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const { data } = await axiosInstanceNormal.get(`/logout-all-devices/${email}`)
+                    if (data.status) {
+                        toast.success(data.message);
                     }
-                });
-            }
-            else{
-                toast.error(userInsertInfo.message)
-            }
+                }
+            });
+        }
+
+        else if (!userInsertInfo?.status) {
+            toast.error(userInsertInfo.message)
         }
         else {
             handleLogin(email, pin)

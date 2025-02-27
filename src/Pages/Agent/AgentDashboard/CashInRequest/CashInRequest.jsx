@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import RequestCard from '../CashOutRequest/RequestCard/RequestCard'
 import UseUser from '../../../../Hooks/UseUser/UseUser'
@@ -8,10 +8,14 @@ import Swal from 'sweetalert2'
 import { useQuery } from '@tanstack/react-query'
 import Loading from '../../../Shared/Loading/Loading'
 import CashInRequestCard from './CashInRequestCard/CashInRequestCard'
+import { useForm } from 'react-hook-form'
 
 function CashInRequest() {
   const axiosInstanceSecure = UseAxiosSecure()
   const { userData, userLoading, userRefetch } = UseUser()
+  const [confirmFormOpen, setConfirmFormOpen] = useState(false)
+  const [confirmData, setConfirmData] = useState({})
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
   const { data: cashInRequests, refetch: cashInRefetch, isLoading: cashInLoading } = useQuery({
     queryKey: ['cashInRequests'],
@@ -64,6 +68,34 @@ function CashInRequest() {
     });
   }
 
+  const handleCashInRequest = async (formData) => {
+    // console.log(formData);
+    const agentPin = formData.pinCashInRequest
+    const confirmAmount = formData.amountCashInRequest
+
+    if (agentPin.length !== 6){
+      return toast.error("PIN Should Be 6 Character.")
+    }
+      Swal.fire({
+        title: "Will you want to confirm this cash in request?",
+        showDenyButton: true,
+        confirmButtonText: "Yes",
+        denyButtonText: `No`
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const { data } = await axiosInstanceSecure.post('/cash-in/accept', { ...confirmData, agentPin, confirmAmount })
+          if (data.status) {
+            console.log(data.request);
+            toast.success(data.message)
+            cashInRefetch()
+          }
+          else {
+            toast.error(data.message)
+          }
+        }
+      });
+  }
+
 
   if (userLoading) {
     return <Loading></Loading>
@@ -104,7 +136,7 @@ function CashInRequest() {
                 <tbody>
                   {
                     cashInRequests?.length > 0 ? cashInRequests?.map((request, index) => {
-                      return <CashInRequestCard key={request?._id} handleAccept={handleAccept} handleCancel={handleCancel} request={request} index={index}></CashInRequestCard>
+                      return <CashInRequestCard key={request?._id} handleAccept={handleAccept} handleCancel={handleCancel} request={request} setConfirmFormOpen={setConfirmFormOpen} confirmFormOpen={confirmFormOpen} setConfirmData={setConfirmData} index={index}></CashInRequestCard>
                     }) :
                       <tr className='text-3xl font-bold text-center text-red-600'>
                         <td></td>
@@ -123,6 +155,52 @@ function CashInRequest() {
           </div>
         </div>
       </div>
+      {/* confirm modal */}
+      {confirmFormOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96 animate__animated animate__fadeIn">
+            <h2 className="text-2xl font-bold mb-4 text-center">Send Money</h2>
+
+            <form onSubmit={handleSubmit(handleCashInRequest)} className="space-y-4">
+              {/* Amount Field */}
+              <div>
+                <label className="block mb-1">Amount (৳)</label>
+                <input
+                  type="number"
+                  {...register("amountCashInRequest", { required: "Amount is required" })}
+                  className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter amount"
+                />
+                {errors.amountCashInRequest && <p className="text-red-500 text-sm">{errors.amountCashInRequest.message}</p>}
+              </div>
+
+              {/* pin number field  */}
+              <div>
+                <label className="block mb-1">PIN Number (must 6 digits)</label>
+                <input
+                  type="password"
+                  {...register("pinCashInRequest", {
+                    required: "PIN number is required",
+                  })}
+                  className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter PIN number"
+                />
+                {errors.pinCashInRequest && <p className="text-red-500 text-sm">{errors.pinCashInRequest.message}</p>}
+              </div>
+
+              {/* Buttons */}
+              <div className="flex justify-between">
+                <button type="button" onClick={() => setConfirmFormOpen(!confirmFormOpen)} className="bg-gray-600 px-4 py-2 rounded hover:bg-gray-700">
+                  Cancel
+                </button>
+                <button type="submit" className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">
+                  Send
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

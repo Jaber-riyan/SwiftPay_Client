@@ -96,7 +96,7 @@ const UserManagement = () => {
                                         </div> */}
                 <div className='px-12 py-10 bg-white dark:bg-gray-800 dark:text-white'>
                     <div className='cinzel-font flex justify-between mb-10 items-center'>
-                        <h2 className='text-[#151515] font-bold text-2xl dark:text-white'>Total Requests: {allUsers?.length}</h2>
+                        <h2 className='text-[#151515] font-bold text-2xl dark:text-white'>Total Users: {allUsers?.length}</h2>
                     </div>
                     <div className="animate__animated animate__fadeInUp">
                         <div className="overflow-y-auto min-h-[50vh] custom-scrollbar">

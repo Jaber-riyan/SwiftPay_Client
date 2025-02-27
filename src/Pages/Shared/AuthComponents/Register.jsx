@@ -22,16 +22,15 @@ const Register = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const axiosInstanceNormal = UseAxiosNormal();
-    const { handleRegister, setUser } = useAuth()
+    const { handleRegister, setUser, user } = useAuth()
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
-    // redirect if user already logged in
-    // useEffect(() => {
-    //     if (user && location.pathname.includes('register')) {
-    //         toast.info("You Logged in ");
-    //         navigate('/login');
-    //     }
-    // }, [user, navigate, location.pathname]);
+    useEffect(() => {
+        if (user) {
+            toast.info("You Logged in ")
+            navigate(location?.state || '/');
+        }
+    }, [user, navigate, location]);
 
     const handleSubmitRegister = async (data) => {
         // e.preventDefault();

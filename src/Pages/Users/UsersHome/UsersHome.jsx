@@ -253,7 +253,7 @@ function UsersHome() {
             {cashOutOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
                     <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96 animate__animated animate__fadeIn">
-                        <h2 className="text-2xl font-bold mb-4 text-center">Send Money</h2>
+                        <h2 className="text-2xl font-bold mb-4 text-center">Cash Out</h2>
 
                         <form onSubmit={handleSubmit(handleCashOut)} className="space-y-4">
                             {/* Amount Field */}
@@ -317,7 +317,7 @@ function UsersHome() {
             {cashInOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
                     <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96 animate__animated animate__fadeIn">
-                        <h2 className="text-2xl font-bold mb-4 text-center">Send Money</h2>
+                        <h2 className="text-2xl font-bold mb-4 text-center">Cash In Request</h2>
 
                         <form onSubmit={handleSubmit(handleCashIn)} className="space-y-4">
                             {/* Amount Field */}
