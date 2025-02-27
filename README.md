@@ -75,6 +75,6 @@ SwiftPay is a secure and user-friendly Mobile Financial Service (MFS) web applic
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/Programming-Hero-Web-Course4/b10a12-client-side-Jaber-riyan.git
-   cd b10a12-client-side-Jaber-riyan
+   git clone https://github.com/Jaber-riyan/SwiftPay_Client.git
+   cd SwiftPay_Client
    ```
