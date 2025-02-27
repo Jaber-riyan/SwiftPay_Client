@@ -39,6 +39,24 @@ SwiftPay is a secure and user-friendly Mobile Financial Service (MFS) web applic
 
 ---
 
+**🔒 Security Measures**
+
+  - JWT Authentication for secure access control
+  - Bcrypt PIN hashing for user data protection
+  - Device-based login restriction (one device per user)
+  - Role-based authorization for different access levels
+
+---
+
+**🔗 Additional Functionalities**
+
+  - Search users by phone number (Admin panel)
+  - Blurred balance visibility (Click to reveal for security)
+  - Notifications on all transactions
+  - Admin dashboard to monitor system funds
+
+---
+
 ## Tech Stack 💻
 
 - **Frontend**:
