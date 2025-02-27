@@ -59,7 +59,7 @@ SwiftPay is a secure and user-friendly Mobile Financial Service (MFS) web applic
 
 ## Tech Stack 💻
 
-- **Frontend**:
+**Frontend**:
   - React
   - Tailwind CSS
   - DaisyUI
@@ -74,10 +74,10 @@ SwiftPay is a secure and user-friendly Mobile Financial Service (MFS) web applic
   - Sort-By
   - React Datepicker
   - React Captcha
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB
-- **Authentication**: Firebase Authentication, JWT
-- **Hosting**: Netlify (client) & Vercel (server)
+**Backend**: Node.js, Express.js
+**Database**: MongoDB
+**Authentication**: Firebase Authentication, JWT
+**Hosting**: Netlify (client) & Vercel (server)
 
 ---
 
