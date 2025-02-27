@@ -25,6 +25,7 @@ function AgentHome() {
     const transactionInfo = {
       senderEmail: userData?.email,
       senderPhoneNumber: userData?.phoneNumber,
+      agentEmail : userData?.email,
       type: "cash in agent",
       status: "pending",
       message: data.message,
